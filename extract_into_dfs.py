@@ -1,0 +1,9 @@
+from extract_academy_csvs_into_df import extract_academy_csvs_into_df
+from extract_talent_csvs_into_df import extract_talent_csvs_into_df
+from extract_talent_jsons_into_df import extract_talent_jsons_into_df
+from extract_talent_txts_into_df import extract_talent_txts_into_df
+
+academy_csvs_df = extract_academy_csvs_into_df()
+talent_csvs_df = extract_talent_csvs_into_df()
+talent_jsons_df = extract_talent_jsons_into_df()
+talent_txts_df = extract_talent_txts_into_df()
