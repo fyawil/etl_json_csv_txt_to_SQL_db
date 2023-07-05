@@ -1,6 +1,6 @@
 def clean_academy_csvs_df(df):
 
-    df['name'] = df['name'].str.upper()
+    df['name'] = df['name'].str.strip().upper()
 
     df['trainer'].replace('Ely Kely', 'Elly Kelly', inplace=True)
 
@@ -35,3 +35,5 @@ def clean_academy_csvs_df(df):
                                                                                         'Analytic_W9', 'Independent_W9', 'Determined_W9', 'Professional_W9',
                                                                                         'Studious_W9', 'Imaginative_W9', 'Analytic_W10', 'Independent_W10',
                                                                                         'Determined_W10', 'Professional_W10', 'Studious_W10', 'Imaginative_W10']].astype(int, errors='ignore')
+
+    return df
