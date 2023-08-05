@@ -1,0 +1,14 @@
+from extract_into_dfs import academy_csvs_df, talent_csvs_df, talent_jsons_df, talent_txts_df
+
+from clean_academy_csvs_df import clean_academy_csvs_df
+from clean_talent_csvs_df import clean_talent_csvs_df
+from clean_talent_jsons_df import clean_talent_jsons_df
+from clean_talent_txts_df import clean_talent_txts_df
+
+# Cleaning the raw dataframes
+cleaned_academy_csvs_df = clean_academy_csvs_df(academy_csvs_df)
+cleaned_talent_csvs_df = clean_talent_csvs_df(talent_csvs_df)
+cleaned_talent_jsons_df = clean_talent_jsons_df(talent_jsons_df)
+cleaned_talent_txts_df = clean_talent_txts_df(talent_txts_df)
+
+print(cleaned_talent_txts_df)

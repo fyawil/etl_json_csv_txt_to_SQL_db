@@ -1,6 +1,8 @@
+import pandas as pd
+
 def clean_academy_csvs_df(df):
 
-    df['name'] = df['name'].str.strip().upper()
+    df['name'] = df['name'].str.strip().str.upper()
 
     df['trainer'].replace('Ely Kely', 'Elly Kelly', inplace=True)
 

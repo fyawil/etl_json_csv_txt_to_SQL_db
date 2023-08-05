@@ -17,7 +17,3 @@ def clean_talent_txts_df(df):
     df['Psychometrics Score'] = df['Psychometrics Score'].astype(int)
 
     return df
-
-from extract_into_dfs import talent_txts_df
-
-print(clean_talent_txts_df(talent_txts_df))
