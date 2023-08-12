@@ -3,6 +3,9 @@ import re
 
 def clean_talent_csvs_df(df):
 
+    # Create an independent copy of the DataFrame
+    df = df.copy()
+
     # Converting name column to upper case for consistency
     df['name'] = df['name'].str.strip().str.upper()
 
@@ -39,7 +42,7 @@ def clean_talent_csvs_df(df):
     df = df.rename(columns={'invited_date': 'invited_date_day', 'month': 'invited_date_month_and_year'})
 
     # Casting invited_day_date to integers
-    df['invited_date_day'] = df['invited_date_day'].astype(int, errors='ignore')
+    df['invited_date_day'] = df['invited_date_day'].astype(pd.Int64Dtype(), errors='ignore')
 
     # Updating the values for consistency
     update_dict = {

@@ -3,6 +3,10 @@ import pandas as pd
 from extract_into_dfs import talent_jsons_df
 
 def clean_talent_jsons_df(df):
+    
+    # Create an independent copy of the DataFrame
+    df = df.copy()
+
     # Convert list columns strengths and weaknesses to strings
     df['strengths'] = df['strengths'].apply(lambda x: str(x))
     df['weaknesses'] = df['weaknesses'].apply(lambda x: str(x))
@@ -48,6 +52,6 @@ def clean_talent_jsons_df(df):
 
     # Use the map() method with the float_to_int_dict to convert floats to integers
     for col in columns_to_convert:
-        df[col] = df[col].map(float_to_int_dict).astype('Int64')
+        df[col] = df[col].map(float_to_int_dict).astype(pd.Int64Dtype())
     
     return df

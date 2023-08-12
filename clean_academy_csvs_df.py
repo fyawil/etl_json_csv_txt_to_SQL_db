@@ -2,6 +2,9 @@ import pandas as pd
 
 def clean_academy_csvs_df(df):
 
+    # Create an independent copy of the DataFrame
+    df = df.copy()
+
     df['name'] = df['name'].str.strip().str.upper()
 
     df['trainer'].replace('Ely Kely', 'Elly Kelly', inplace=True)
@@ -36,6 +39,6 @@ def clean_academy_csvs_df(df):
                                                                                         'Determined_W8', 'Professional_W8', 'Studious_W8', 'Imaginative_W8',
                                                                                         'Analytic_W9', 'Independent_W9', 'Determined_W9', 'Professional_W9',
                                                                                         'Studious_W9', 'Imaginative_W9', 'Analytic_W10', 'Independent_W10',
-                                                                                        'Determined_W10', 'Professional_W10', 'Studious_W10', 'Imaginative_W10']].astype(int, errors='ignore')
+                                                                                        'Determined_W10', 'Professional_W10', 'Studious_W10', 'Imaginative_W10']].astype(pd.Int64Dtype(), errors='ignore')
 
     return df
