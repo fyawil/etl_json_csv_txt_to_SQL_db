@@ -167,12 +167,27 @@ courses = courses[['course_id', 'course_name']]
 
 #######################
 
+# Extracting cols needed for candidate table
 candidate = cleaned_talent_csvs_df.copy()
 
-
-
-['name', 'gender', 'dob', 'email', 'city', 'address', 'postcode',
+candidate = candidate[['name', 'gender', 'dob', 'email', 'city', 'address', 'postcode',
        'phone_number', 'uni', 'degree', 'invited_date_day',
-       'invited_date_month_and_year', 'invited_by']
+       'invited_date_month_and_year', 'invited_by']]
 
-print(cleaned_talent_csvs_df.columns)
+# Adding name_id to candidate table
+name_id_list = []
+
+name_list_candidate = list(candidate['name'])
+
+current_new_id = 397
+for name in name_list_candidate:
+    if name in list(cleaned_academy_csvs_df['name']):
+        name_id_list.append(cleaned_academy_csvs_df['name'][cleaned_academy_csvs_df['name'] == name].index[0])
+    else:
+        name_id_list.append(current_new_id)
+        current_new_id += 1
+
+candidate['name_id'] = name_id_list
+
+print(cleaned_academy_csvs_df[cleaned_academy_csvs_df['name'] == 'MATTHAEUS AUDAS'])
+
