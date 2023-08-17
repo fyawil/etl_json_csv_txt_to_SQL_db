@@ -7,6 +7,9 @@ def clean_talent_jsons_df(df):
     # Create an independent copy of the DataFrame
     df = df.copy()
 
+    # Converting name to upper case for consistency
+    df['name'] = df['name'].str.upper()
+
     # Convert list columns strengths and weaknesses to strings
     df['strengths'] = df['strengths'].apply(lambda x: str(x))
     df['weaknesses'] = df['weaknesses'].apply(lambda x: str(x))

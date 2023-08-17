@@ -23,7 +23,10 @@ def extract_talent_txts_into_df():
             sparta_day_date = lines[0].strip()
             academy = lines[1].split(" ")[0]
             for line in lines[3:]:
-                name = line.split("-")[0].strip()
+                if len(line.split("-")) > 2:
+                    name = "-".join(line.split("-")[0:2]).strip()
+                else:
+                    name = line.split("-")[0].strip()
                 psych_score = line.split(":")[1].split("/")[0].strip()
                 pres_score = line.split(":")[2].split("/")[0].strip()
 

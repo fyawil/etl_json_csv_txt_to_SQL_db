@@ -167,17 +167,13 @@ courses = courses[['course_id', 'course_name']]
 
 #######################
 
-# Extracting cols needed for candidate table
-candidate = cleaned_talent_csvs_df.copy()
-
-candidate = candidate[['name', 'gender', 'dob', 'email', 'city', 'address', 'postcode',
-       'phone_number', 'uni', 'degree', 'invited_date_day',
-       'invited_date_month_and_year', 'invited_by']]
+# Creating a table to manipulate from talent_csvs
+candidate_talent_csv_cols = cleaned_talent_csvs_df.copy()
 
 # Adding name_id to candidate table
 name_id_list = []
 
-name_list_candidate = list(candidate['name'])
+name_list_candidate = list(candidate_talent_csv_cols['name'])
 
 current_new_id = 397
 for name in name_list_candidate:
@@ -187,7 +183,19 @@ for name in name_list_candidate:
         name_id_list.append(current_new_id)
         current_new_id += 1
 
-candidate['name_id'] = name_id_list
+candidate_talent_csv_cols['name_id'] = name_id_list
 
-print(cleaned_academy_csvs_df[cleaned_academy_csvs_df['name'] == 'MATTHAEUS AUDAS'])
+# Creating a dictionary with name matched to name_id
+keys_series = candidate_talent_csv_cols['name']
+values_series = candidate_talent_csv_cols['name_id']
+name_to_id_dict = dict(zip(keys_series, values_series))
 
+# Creating the table to manipulate from talent_jsons
+candidate_talent_json_cols = cleaned_talent_jsons_df.copy()
+
+candidate_talent_json_cols['name_id'] = candidate_talent_json_cols['name'].map(name_to_id_dict)
+
+# Creating the table to manipulate from talent_jsons
+candidate_talent_txts_cols = cleaned_talent_txts_df.copy()
+
+candidate_talent_txts_cols['name_id'] = candidate_talent_txts_cols['Name'].map(name_to_id_dict)
