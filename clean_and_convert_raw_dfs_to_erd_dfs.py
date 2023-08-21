@@ -27,3 +27,21 @@ cleaned_parent_df = cleaned_parent_df.merge(right=cleaned_talent_txts_df,how='ou
 # Creating the name_id column
 
 cleaned_parent_df['name_id'] = cleaned_parent_df.index
+
+# Creating academy table
+
+academy = cleaned_parent_df.copy()
+
+academy = academy[['name_id', 'Cohort Name']]
+
+academy['Cohort Name'] = academy['Cohort Name'].map(lambda course: course.split(' ')[0], na_action='ignore')
+
+academy['course_id'] = academy['Cohort Name'].map({'Business': 0, 'Engineering': 1, 'Data': 2})
+
+academy = academy[['name_id', 'course_id']]
+
+# Creating course table
+
+course = pd.DataFrame(data={'course_id': [0, 1, 2], 'course_name': ['Business', 'Engineering', 'Data']})
+
+print(course)
