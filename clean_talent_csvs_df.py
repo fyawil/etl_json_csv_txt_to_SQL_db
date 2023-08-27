@@ -64,4 +64,7 @@ def clean_talent_csvs_df(df):
     # Updating correcting misspelt Bruno Belbrook to Bruno Bellbrook
     df['invited_by'] = df['invited_by'].replace({'Bruno Belbrook': 'Bruno Bellbrook'})
 
+    # Converting invited_by column to upper case for consistency
+    df['invited_by'] = df['invited_by'].str.strip().str.upper()
+
     return df
