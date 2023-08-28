@@ -40,10 +40,12 @@ academy = academy[['name_id', 'Cohort Name']]
 academy['Cohort Name'] = academy['Cohort Name'].map(
     lambda course: course.split(' ')[0], na_action='ignore')
 
-academy['course_id'] = academy['Cohort Name'].map(
-    {'Business': 0, 'Engineering': 1, 'Data': 2})
+course_id_mapping = {'Business': 0, 'Engineering': 1, 'Data': 2}
+academy['course_id'] = academy['Cohort Name'].map(course_id_mapping)
 
 academy = academy[['name_id', 'course_id']]
+
+academy.dropna(how='any', inplace=True)
 
 # Creating course table
 
@@ -56,6 +58,8 @@ unique_trainers = (cleaned_parent_df.copy())['trainer'].dropna().unique()
 
 trainer = pd.DataFrame(data=unique_trainers, columns=['trainer_name'])
 trainer['trainer_id'] = trainer.index
+
+trainer = trainer[['trainer_id', 'trainer_name']]
 
 # Creating trainer_junction table
 
@@ -78,9 +82,9 @@ trainer_to_trainer_id_dict = dict(
     zip(trainer['trainer_name'], trainer['trainer_id']))
 trainer_junction['trainer'] = trainer_junction['trainer'].map(
     trainer_to_trainer_id_dict)
-trainer_junction.rename(columns={'trainer': 'trainer_id'})
+trainer_junction.rename(columns={'trainer': 'trainer_id', 'Cohort Name': 'course_id'}, inplace=True)
 
-trainer_junction.reset_index(inplace=True, drop=True)
+trainer_junction = trainer_junction[['course_id', 'trainer_id']]
 
 # Creating academy_result table
 
@@ -124,19 +128,6 @@ academy_result_w9 = academy_result_wide[['name', 'Analytic_W9', 'Independent_W9'
 academy_result_w10 = academy_result_wide[['name', 'Analytic_W10', 'Independent_W10', 'Determined_W10',
                                           'Professional_W10', 'Studious_W10', 'Imaginative_W10']]
 
-
-def add_week_no(df):
-    new_df = df.copy()
-    new_df['week_no'] = int(new_df.columns[1].split('_W')[1])
-    return new_df
-
-
-def remove_week_no_from_cols(df):
-    new_df = df.copy()
-    new_df.rename(columns=lambda col: col.split('_W')[0], inplace=True)
-    return new_df
-
-
 academy_results_sep_into_weeks = [academy_result_w1,
                                   academy_result_w2,
                                   academy_result_w3,
@@ -147,24 +138,40 @@ academy_results_sep_into_weeks = [academy_result_w1,
                                   academy_result_w8,
                                   academy_result_w9,
                                   academy_result_w10]
+def add_week_no(df):
+    new_df = df.copy()
+    week_col = new_df.columns[1]
+    week_no = int(week_col.split('_W')[1])
+    new_df['week_no'] = week_no
+    return new_df
 
-for weekly_table in academy_results_sep_into_weeks:
-    weekly_table = add_week_no(weekly_table)
-    weekly_table = remove_week_no_from_cols(weekly_table)
+
+for idx, weekly_table in enumerate(academy_results_sep_into_weeks):
+    academy_results_sep_into_weeks[idx] = add_week_no(weekly_table)
+
+def remove_suffix_after_w(df):
+    new_columns = [col.split('_W')[0] if '_W' in col else col for col in df.columns]
+    df.columns = new_columns
+    return df
+
+for idx, weekly_table in enumerate(academy_results_sep_into_weeks):
+    academy_results_sep_into_weeks[idx] = remove_suffix_after_w(weekly_table)
+
 
 academy_result = pd.concat(academy_results_sep_into_weeks)
 
 academy_result.dropna(inplace=True, thresh=6)
 
-academy_result.reset_index(inplace=True, drop=True)
-
 name_to_name_id_dict = dict(
     zip(cleaned_parent_df['name'], cleaned_parent_df['name_id']))
 academy_result['name'] = academy_result['name'].map(
     name_to_name_id_dict)
-academy_result.rename(inplace=True, columns={'name': 'name_id'})
 
-academy_result.rename(inplace=True, columns=lambda col: col.lower())
+academy_result.rename(columns={'name': 'name_id'}, inplace=True)
+academy_result.rename(columns=str.lower, inplace=True)
+
+academy_result = academy_result[['name_id', 'week_no', 'analytic', 'independent', 'determined', 'professional',
+       'studious', 'imaginative']]
 
 # Creating the candidate table
 
@@ -181,7 +188,7 @@ candidate.rename(inplace=True, columns={'date': 'interview_date', 'dob': 'date_o
 candidate['dollarsign_joined_address'] = candidate['address'] + \
     "$" + candidate['city'] + "$" + candidate['postcode']
 
-candidate.drop(columns=['address', 'city', 'postcode'])
+candidate.drop(columns=['address', 'city', 'postcode'], inplace=True)
 
 unique_candidate_addresses = candidate['dollarsign_joined_address'].unique()
 
@@ -199,6 +206,12 @@ candidate['dollarsign_joined_address'] = candidate['dollarsign_joined_address'].
 candidate.rename(inplace=True, columns={
                  'dollarsign_joined_address': 'address_id'})
 
+candidate = candidate[['name', 'name_id', 'interview_date', 'invited_by',
+       'address_id', 'gender', 'date_of_birth', 'email', 'phone_number',
+       'uni_degree', 'self_development', 'interview_result', 'geoflex',
+       'financial_support_self', 'course_interest', 'sparta_day_date',
+       'psychometric_result', 'presentation_result', 'sparta_day_location']]
+
 # Creating the address table
 
 address = cleaned_parent_df.copy()
@@ -215,6 +228,9 @@ address.rename(inplace=True, columns={
                'dollarsign_joined_address': 'address_id'})
 
 address.drop_duplicates(inplace=True)
+
+
+address = address[['address_id', 'address', 'city', 'postcode']]
 
 # Creating the strength table
 
@@ -236,6 +252,8 @@ set_of_strengths = set(list_of_strengths)
 strength = pd.DataFrame(data=set_of_strengths, columns=['strength'])
 
 strength['strength_id'] = strength.index
+
+strength = strength[['strength_id', 'strength']]
 
 # Creating the strength_junction table
 
@@ -268,6 +286,8 @@ strength_to_strength_id_dict = dict(
 strength_junction['strength'] = strength_junction['strength'].map(
     strength_to_strength_id_dict)
 
+strength_junction.rename(inplace=True, columns={'strength': 'strength_id'})
+
 # Creating the weakness table
 
 weakness = (cleaned_parent_df.copy())
@@ -289,7 +309,7 @@ weakness = pd.DataFrame(data=set_of_weaknesses, columns=['weakness'])
 
 weakness['weakness_id'] = weakness.index
 
-# Creating weakness_junction table
+weakness = weakness[['weakness_id', 'weakness']]
 
 # Creating the weakness_junction table
 
@@ -321,6 +341,8 @@ weakness_to_weakness_id_dict = dict(
 
 weakness_junction['weakness'] = weakness_junction['weakness'].map(
     weakness_to_weakness_id_dict)
+
+weakness_junction.rename(inplace=True, columns={'weakness': 'weakness_id'})
 
 # Creating tech_score table from erd, but calling it programming_language
 
@@ -375,3 +397,5 @@ tech_self_score = pd.concat([
     extract_name_id_score_and_language(cleaned_parent_df, 'SPSS'),
     extract_name_id_score_and_language(cleaned_parent_df, 'PHP')
     ])
+
+tech_self_score = tech_self_score[['name_id', 'programming_language_id', 'score']]
